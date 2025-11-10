@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma" // keep if you want a custom path
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+model Customer {
+  customer_id   Int     @id @default(autoincrement())
+  phone         String  @unique
+  first_name    String
+  last_name     String
+  password_hash String  // ← add this
+
+  orders Order[]
+
+  @@map("Customer")
+}
+
+model Order {
+  order_id       Int       @id @default(autoincrement())
+  purchase_date  DateTime  @default(now())
+  date_delivered DateTime?
+  status_id      Int
+  price Float
+
+  // Relation field
+  customer_id Int
+  customer    Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
+
+  status Status @relation(fields: [status_id], references: [status_id])
+
+  @@map("Order")
+}
+
+model Status {
+  status_id   Int     @id @default(autoincrement())
+  description String
+  orders      Order[]
+
+  @@map("Status")
+}
