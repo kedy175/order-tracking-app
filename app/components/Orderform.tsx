@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 
 export default function OrderForm() {
-  const [orderId, setOrderId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ orderId: "", phone: "" });
+  const [phone, setPhone] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -15,7 +16,7 @@ export default function OrderForm() {
     const res = await fetch("/api/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId }),
+      body: JSON.stringify(form),
     });
 
     const data = await res.json();
@@ -23,20 +24,29 @@ export default function OrderForm() {
 
     // ✅ If result is valid, redirect
     if (data.message === "Order found" || data.success) {
-      router.push(`/order-status/${orderId}`);
+      router.push(data.redirect);
     } else {
-      alert("Order not found!");
+      notFound();
     }
   };
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col">
+        <p className="">Order Id</p>
         <input
-          value={orderId}
-          onChange={(e) => setOrderId(e.target.value)}
+          value={form.orderId ?? ''}
+          onChange={(e) => setForm({...form, orderId: e.target.value})}
           placeholder="Enter Order ID"
-          className="border border-gray-400 p-2 rounded"
+          className="border border-gray-400 p-2 rounded mb-4"
+        />
+        <p >Phone Number</p>
+        <input
+          value={form.phone ?? ''}
+          onChange={(e) => setForm({...form, phone: e.target.value})}
+          placeholder="Enter Phone Number"
+          className="border border-gray-400 p-2 rounded mb-4"
+          type="number"
         />
         <button
           type="submit"

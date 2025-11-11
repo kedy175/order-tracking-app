@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ phone: "", first_name: "", last_name: "", password: "" });
   const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,13 +24,17 @@ export default function RegisterPage() {
     setMsg(data.message || (data.success ? "Registered!" : "Failed"));
     if (data.success) {
       // e.g., redirect to login
-      // router.push("/login");
+      router.push("/login");
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
+    <>
+    <Image src="/logo.png" alt="Logo" width={200} height={200} className="mx-auto mt-20 my"/>
+    <main className=" flex items-center justify-center p-6">
+      
       <form onSubmit={submit} className="w-full max-w-sm border p-6 rounded space-y-3">
+        
         <p>Phone Number</p>
         <input className="border p-2 w-full" placeholder="Phone"
           value={form.phone} onChange={e=>setForm({...form, phone:e.target.value})}/>
@@ -46,5 +53,6 @@ export default function RegisterPage() {
         {msg && <p className="text-center text-sm">{msg}</p>}
       </form>
     </main>
+    </>
   );
 }
