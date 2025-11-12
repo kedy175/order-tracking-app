@@ -1,17 +1,20 @@
+// ...existing code...
 'use client';
 
 import { useState } from "react";
-import { notFound, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function OrderForm() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ orderId: "", phone: "" });
-  const [phone, setPhone] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     const res = await fetch("/api/track", {
       method: "POST",
@@ -22,13 +25,13 @@ export default function OrderForm() {
     const data = await res.json();
     setLoading(false);
 
-    // ✅ If result is valid, redirect
     if (data.message === "Order found" || data.success) {
       router.push(data.redirect);
     } else {
-      notFound();
+      setError("Order not found. Please verify the Order ID and phone number.");
     }
   };
+
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -39,15 +42,18 @@ export default function OrderForm() {
           onChange={(e) => setForm({...form, orderId: e.target.value})}
           placeholder="Enter Order ID"
           className="border border-gray-400 p-2 rounded mb-4"
+          required
         />
-        <p >Phone Number</p>
+        <p>Phone Number</p>
         <input
           value={form.phone ?? ''}
           onChange={(e) => setForm({...form, phone: e.target.value})}
           placeholder="Enter Phone Number"
           className="border border-gray-400 p-2 rounded mb-4"
-          type="number"
+          type="tel"
+          required
         />
+        {error && <p className="text-red-600 mb-2">{error}</p>}
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded"

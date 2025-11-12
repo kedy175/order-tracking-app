@@ -1,13 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import crypto from "crypto";
-
-// helper — deterministic hash
-function hashPhone(phone: string) {
-  // use a secret from your .env so others can’t forge hashes
-  const secret = process.env.HASH_SECRET || "default_secret_key";
-  return crypto.createHmac("sha256", secret).update(phone).digest("hex").slice(0, 12);
-}
 
 export async function POST(req: Request) {
   try {
@@ -38,9 +30,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // generate hashed phone for URL
-    const hashedPhone = hashPhone(phone);
-    const orderToken = `${order.order_id}-${hashedPhone}`;
+    
+    const orderToken = `${order.tracking_token}`;
     // send redirect URL back to client
     return NextResponse.json({
       success: true,

@@ -13,30 +13,44 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  USER
+  ADMIN
+}
+
 model Customer {
-  customer_id   Int     @id @default(autoincrement())
-  phone         String  @unique
+  customer_id   Int    @id @default(autoincrement())
+  phone         String @unique
   first_name    String
   last_name     String
-  password_hash String  // ← add this
+  password_hash String
+  role          Role   @default(USER)
 
-  orders Order[]
+  // Optional: public id if you ever expose customers
+  public_id     String @unique @default(cuid())
+
+  orders        Order[]
 
   @@map("Customer")
 }
 
 model Order {
-  order_id       Int       @id @default(autoincrement())
-  purchase_date  DateTime  @default(now())
-  date_delivered DateTime?
-  status_id      Int
-  price Float
+  order_id         Int       @id @default(autoincrement())
+  purchase_date    DateTime  @default(now())
+  date_delivered   DateTime?
+  status_id        Int
+  price            Float
 
-  // Relation field
+  // Public-facing identifiers (for links)
+  tracking_token   String    @unique @default(cuid())  // shareable tracking URL
+  // Optional: if you ever expose order IDs in URLs separate from PK:
+  public_id        String    @unique @default(cuid())
+
+  // Relations
   customer_id Int
   customer    Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
-
-  status Status @relation(fields: [status_id], references: [status_id])
+  status      Status   @relation(fields: [status_id], references: [status_id])
 
   @@map("Order")
 }

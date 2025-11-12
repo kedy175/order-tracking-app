@@ -1,32 +1,24 @@
-// app/order-status/[orderToken]/page.tsx
+// app/order-status/[trackingToken]/page.tsx
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowDown } from "lucide-react";
-import { hashPhone } from "@/lib/hash";
 
 export default async function OrderStatusPage({
   params,
 }: {
-  params: Promise<{ orderToken: string }>;
+  params: Promise<{ trackingToken: string }>;
 }) {
   // ✅ unwrap params
-  const { orderToken } = await params;
+  const { trackingToken } = await params;
 
-  // ✅ safe parse
-  const [idStr, hashPart] = (orderToken ?? "").split("-");
-  const orderId = Number.parseInt(idStr, 10);
-  if (!orderId || !hashPart) notFound();
+  if (!trackingToken) notFound();
 
   const order = await prisma.order.findUnique({
-    where: { order_id: orderId },
+    where: { tracking_token: trackingToken },
     include: { status: true, customer: true },
   });
   if (!order) notFound();
-
-  // ✅ verify hash matches phone
-  const computed = hashPhone(order.customer.phone);
-  if (computed !== hashPart) notFound();
 
   const steps = [
     "Money received",
@@ -37,6 +29,8 @@ export default async function OrderStatusPage({
     "Delivered",
   ];
   const currentIndex = steps.indexOf(order.status.description);
+
+  console.log(currentIndex)
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
