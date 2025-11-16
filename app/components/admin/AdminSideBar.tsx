@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, Users, PackageSearch, Settings, LogOut, Briefcase } from "lucide-react";
+import { LayoutDashboard, Users, PackageSearch, Settings, LogOut, Briefcase, BarChart } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -33,6 +33,12 @@ export default function AdminSideBar({ pathname }: AdminSideBarProps) {
       icon: PackageSearch,
       href: `/admin/${adminToken}/orders`,
       route: "orders",
+    },
+    {
+      label: "Analytics",
+      icon: BarChart,
+      href: `/admin/${adminToken}/analytics`,
+      route: "analytics",
     },
     {
       label: "Settings",

@@ -1,10 +1,8 @@
 'use client';
 
 import AdminActionCards from "@/app/components/admin/AdminActionCards";
-import AdminNavBar from "@/app/components/admin/AdminNavBar";
-import AdminSideBar from "@/app/components/admin/AdminSideBar";
 import AdminStatsCards from "@/app/components/admin/AdminStatsCards";
-import RecentOrders from "@/app/components/RecentOrders";
+import RecentOrders from "@/app/components/RecentOrdersTable";
 import { useEffect, useState } from "react";
 
 export default function AdminPage() {

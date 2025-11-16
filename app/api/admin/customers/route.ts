@@ -16,6 +16,7 @@ export async function GET() {
       orderBy: { customer_id: "asc" },
     });
 
+    
     return NextResponse.json({ success: true, customers });
   } catch (err) {
     console.error("GET /api/admin/customers error:", err);
